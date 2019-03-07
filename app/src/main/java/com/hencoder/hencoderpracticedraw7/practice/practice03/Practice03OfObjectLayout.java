@@ -13,46 +13,50 @@ import android.widget.RelativeLayout;
 import com.hencoder.hencoderpracticedraw7.R;
 
 public class Practice03OfObjectLayout extends RelativeLayout {
-    Practice03OfObjectView view;
-    Button animateBt;
+  Practice03OfObjectView view;
+  Button animateBt;
 
-    public Practice03OfObjectLayout(Context context) {
-        super(context);
-    }
+  public Practice03OfObjectLayout(Context context) {
+    super(context);
+  }
 
-    public Practice03OfObjectLayout(Context context, AttributeSet attrs) {
-        super(context, attrs);
-    }
+  public Practice03OfObjectLayout(Context context, AttributeSet attrs) {
+    super(context, attrs);
+  }
 
-    public Practice03OfObjectLayout(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-    }
+  public Practice03OfObjectLayout(Context context, AttributeSet attrs, int defStyleAttr) {
+    super(context, attrs, defStyleAttr);
+  }
 
+  @Override
+  protected void onAttachedToWindow() {
+    super.onAttachedToWindow();
+
+    view = (Practice03OfObjectView) findViewById(R.id.objectAnimatorView);
+    animateBt = (Button) findViewById(R.id.animateBt);
+
+    animateBt.setOnClickListener(new OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        ObjectAnimator animator = ObjectAnimator.ofObject(view, "position",
+            new PointFEvaluator(), new PointF(0, 0), new PointF(1, 1));
+        animator.setInterpolator(new LinearInterpolator());
+        animator.setDuration(1000);
+        animator.start();
+      }
+    });
+  }
+
+  private class PointFEvaluator implements TypeEvaluator<PointF> {
+
+    // 重写 evaluate() 方法，让 PointF 可以作为属性来做动画
+    PointF pointF = new PointF();
     @Override
-    protected void onAttachedToWindow() {
-        super.onAttachedToWindow();
-
-        view = (Practice03OfObjectView) findViewById(R.id.objectAnimatorView);
-        animateBt = (Button) findViewById(R.id.animateBt);
-
-        animateBt.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ObjectAnimator animator = ObjectAnimator.ofObject(view, "position",
-                        new PointFEvaluator(), new PointF(0, 0), new PointF(1, 1));
-                animator.setInterpolator(new LinearInterpolator());
-                animator.setDuration(1000);
-                animator.start();
-            }
-        });
+    public PointF evaluate(float fraction, PointF startValue, PointF endValue) {
+       float x = startValue.x +  (endValue.x - startValue.x) * fraction;
+       float y = startValue.y +  (endValue.y - startValue.y) * fraction;
+       pointF.set(x,y);
+      return pointF;
     }
-
-    private class PointFEvaluator implements TypeEvaluator<PointF> {
-
-        // 重写 evaluate() 方法，让 PointF 可以作为属性来做动画
-        @Override
-        public PointF evaluate(float fraction, PointF startValue, PointF endValue) {
-            return startValue;
-        }
-    }
+  }
 }
